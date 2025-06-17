@@ -1,20 +1,13 @@
 package com.example.id2.controller;
 
-import com.example.id2.service.PatientService;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Validated
 @RestController
-@RequestMapping("/patient")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
-public class PatientController {
-
-    private PatientService patientService;
-
-    private static final Logger logger = LoggerFactory.getLogger(PatientController.class);
+public class AuthenticationController {
 }
