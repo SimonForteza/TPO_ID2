@@ -1,8 +1,11 @@
 package com.example.id2.controller;
 
+import com.example.id2.dto.CreateFamilyRelationDto;
 import com.example.id2.dto.CreatePatientRequest;
 import com.example.id2.dto.SearchPatientResponse;
+import com.example.id2.model.neo.RelationshipWeight;
 import com.example.id2.service.PatientService;
+import com.example.id2.service.RelationshipService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,11 +25,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class PatientController {
 
     private final PatientService patientService;
+    private final RelationshipService relationshipService;
 
     private static final Logger logger = LoggerFactory.getLogger(PatientController.class);
 
-    public PatientController(PatientService patientService) {
+    public PatientController(PatientService patientService, RelationshipService relationshipService) {
         this.patientService = patientService;
+        this.relationshipService = relationshipService;
     }
 
     @GetMapping(path = "/{dni}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -39,6 +44,14 @@ public class PatientController {
     public ResponseEntity<Void> createPatient (@RequestBody CreatePatientRequest createPatientRequest) {
         logger.info(createPatientRequest.toString());
         patientService.createPatient(createPatientRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(path = "/{familyDni}/{patientDni}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> addFamilyRelation (@PathVariable String patientDni, @PathVariable String familyDni,
+                                                   @RequestBody CreateFamilyRelationDto createFamilyRelationDto) {
+        logger.info("CREATING FAMILY RELATION BETWEEN " + patientDni + " AND " + familyDni + " WITH RELATION: " + createFamilyRelationDto.relation());
+        relationshipService.establishFamilyRelationship(patientDni, familyDni, RelationshipWeight.valueOf(createFamilyRelationDto.relation()));
         return ResponseEntity.ok().build();
     }
 }
