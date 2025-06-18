@@ -6,15 +6,34 @@ import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Repository
 public interface PatientNeoRepository extends Neo4jRepository<PatientNeoModel, String> {
 
-    @Query("""
-        MATCH (p:Patient {dni: $dni})<-[:CONSULTS]-(prof:Professional)
-        RETURN prof
-        """)
-    Optional<Set<ProfessionalNeoModel>> findProfessionalsByPatientDni (String dni);
+    Optional<PatientNeoModel> findByDni(String dni);
+
+    @Query("MATCH (p:Patient {dni: $dni})<-[:CONSULTS]-(prof:Professional) RETURN prof")
+    Optional<List<ProfessionalNeoModel>> findProfessionalsConsultingPatient(String dni);
+
+    @Query("MATCH (p1:Patient {dni: $patient1Dni}), (p2:Patient {dni: $patient2Dni}) " +
+            "CREATE (p1)-[r:IS_FAMILY_OF {weight: $weight}]->(p2)")
+    void createFamilyRelationship(String patient1Dni, String patient2Dni, int weight);
+
+    @Query("MATCH (p:Patient {dni: $dni})-[r:IS_FAMILY_OF]->(family:Patient) " +
+            "RETURN family, r.weight as weight " +
+            "ORDER BY r.weight")
+    List<PatientNeoModel> findFamilyMembers(String dni);
+
+    @Query("MATCH (p:Patient {dni: $dni})-[r:IS_FAMILY_OF]->(family:Patient) " +
+            "WHERE r.weight <= $maxWeight " +
+            "RETURN family, r.weight as weight " +
+            "ORDER BY r.weight")
+    List<PatientNeoModel> findFamilyMembersByMaxWeight(String dni, int maxWeight);
+
+    @Query("MATCH (p:Patient {dni: $dni})-[r:IS_FAMILY_OF]->(family:Patient) " +
+            "WHERE r.weight = $weight " +
+            "RETURN family, r.weight as weight")
+    List<PatientNeoModel> findFamilyMembersByType(String dni, int weight);
 }

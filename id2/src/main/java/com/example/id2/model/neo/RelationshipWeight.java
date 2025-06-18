@@ -1,4 +1,4 @@
-package com.example.id2.model;
+package com.example.id2.model.neo;
 
 public enum RelationshipWeight {
     PARENT(1),      // Padre/Madre

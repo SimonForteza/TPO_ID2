@@ -1,17 +1,16 @@
 package com.example.id2.service;
 
-import com.example.id2.model.Neo4jPatient;
-import com.example.id2.model.Neo4jProfessional;
-import com.example.id2.model.RelationshipWeight;
+import com.example.id2.model.neo.PatientNeoModel;
+import com.example.id2.model.neo.RelationshipWeight;
 
 import java.util.List;
 
 public interface RelationshipService {
     void establishFamilyRelationship(String patient1MongoId, String patient2MongoId, RelationshipWeight relationshipWeight);
 
-    List<Neo4jPatient> getFamilyMembers(String patientMongoId);
+    List<PatientNeoModel> getFamilyMembers(String patientMongoId);
 
-    List<Neo4jPatient> getFamilyMembersByMaxWeight(String patientMongoId, RelationshipWeight maxWeight);
+    List<PatientNeoModel> getFamilyMembersByMaxWeight(String patientMongoId, RelationshipWeight maxWeight);
 
-    List<Neo4jPatient> getFamilyMembersByType(String patientMongoId, RelationshipWeight relationshipWeight);
+    List<PatientNeoModel> getFamilyMembersByType(String patientMongoId, RelationshipWeight relationshipWeight);
 }

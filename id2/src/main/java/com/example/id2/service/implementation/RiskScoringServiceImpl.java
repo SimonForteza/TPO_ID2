@@ -1,9 +1,9 @@
 package com.example.id2.service.implementation;
 
-import com.example.id2.model.FamilyRelationship;
-import com.example.id2.model.Neo4jPatient;
+import com.example.id2.model.neo.FamilyRelationship;
+import com.example.id2.model.neo.PatientNeoModel;
 import com.example.id2.model.mongo.FamiliarPrecedentModel;
-import com.example.id2.repository.Neo4jPatientRepository;
+import com.example.id2.repository.neo.PatientNeoRepository;
 import com.example.id2.repository.mongo.FamiliarPrecedentMongoRepository;
 import com.example.id2.service.RelationshipService;
 import com.example.id2.service.RiskScoringService;
@@ -16,7 +16,7 @@ import java.util.*;
 public class RiskScoringServiceImpl implements RiskScoringService {
 
     @Autowired
-    private Neo4jPatientRepository neo4jPatientRepository;
+    private PatientNeoRepository patientNeoRepository;
 
     @Autowired
     private RelationshipService relationshipService;
@@ -27,24 +27,24 @@ public class RiskScoringServiceImpl implements RiskScoringService {
     @Override
     public Map<String, Object> calculateRiskScore(String patientId) {
         Map<String, Object> result = new HashMap<>();
-        List<Neo4jPatient> familyMembers = relationshipService.getFamilyMembers(patientId);
+        List<PatientNeoModel> familyMembers = relationshipService.getFamilyMembers(patientId);
 
         double totalRiskScore = 0;
         int familyMemberCount = 0; // Renamed for clarity, it represents the count of family members contributing to the score
         List<Map<String, Object>> familyDetails = new ArrayList<>();
 
-        for (Neo4jPatient familyMember : familyMembers) {
+        for (PatientNeoModel familyMember : familyMembers) {
             // Get relationship weight for the current family member
             int relationshipWeight = 5; // Default value
             for (FamilyRelationship rel : familyMember.getFamilyMembers()) {
-                if (rel.getFamilyMember().getMongoId().equals(patientId)) {
+                if (rel.getFamilyMember().getDni().equals(patientId)) {
                     relationshipWeight = rel.getRelationshipWeight().getWeight();
                     break;
                 }
             }
 
             // Get disease count for the family member from MongoDB
-            int diseaseCount = familiarPrecedentMongoRepository.findByPatientDni(familyMember.getMongoId())
+            int diseaseCount = familiarPrecedentMongoRepository.findByPatientDni(familyMember.getDni())
                     .map(FamiliarPrecedentModel::getPrecedents)
                     .map(Map::size)
                     .orElse(0);
@@ -57,7 +57,7 @@ public class RiskScoringServiceImpl implements RiskScoringService {
 
             // Add family member details
             Map<String, Object> familyDetail = new HashMap<>();
-            familyDetail.put("patientMongoId", familyMember.getMongoId());
+            familyDetail.put("patientMongoId", familyMember.getDni());
             familyDetail.put("relationshipWeight", relationshipWeight);
             familyDetail.put("precedentCount", diseaseCount);
             familyDetail.put("score", memberScore);

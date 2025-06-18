@@ -129,10 +129,14 @@ public class PatientServiceImpl implements PatientService {
         if (requesterDni.equals(patientDni))
             return;
 
-        if (patientNeoRepository.findProfessionalsByPatientDni(patientDni).get().stream().filter(d -> d.getDni().equals(requesterDni)).toList().isEmpty()
-                && role.equals("PROFESSIONAL"))
+        if (role.equals("PROFESSIONAL")
+                && professionalNeoRepository.findPatientsConsultedByProfessional(requesterDni)
+                .get()
+                .stream()
+                .noneMatch(patient -> patient.getDni().equals(patientDni))) {
             return;
+        }
 
-        throw new RuntimeException();
+        throw new NoSuchElementException();
     }
 }

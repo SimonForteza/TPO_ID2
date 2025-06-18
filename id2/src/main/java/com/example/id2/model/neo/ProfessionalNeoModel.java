@@ -1,6 +1,7 @@
 package com.example.id2.model.neo;
 
-import org.springframework.data.neo4j.core.schema.Id;
+import lombok.Data;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
@@ -9,7 +10,6 @@ import java.util.Set;
 
 @Node("Professional")
 public class ProfessionalNeoModel {
-
     @Id
     private String dni;
 
@@ -19,6 +19,9 @@ public class ProfessionalNeoModel {
     public ProfessionalNeoModel(String dni, Set<PatientNeoModel> patients) {
         this.dni = dni;
         this.patients = patients;
+    }
+
+    public ProfessionalNeoModel() {
     }
 
     public String getDni() {
