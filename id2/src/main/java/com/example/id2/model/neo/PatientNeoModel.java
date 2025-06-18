@@ -10,11 +10,11 @@ import java.util.Set;
 
 @Node("Patient")
 @Data
-public class PatientModel {
+public class PatientNeoModel {
 
     @Id
     private String dni;
 
     @Relationship(type = "CONSULTS", direction = Relationship.Direction.INCOMING)
-    private Set<ProfessionalModel> professionals = new HashSet<>();
+    private Set<ProfessionalNeoModel> professionals = new HashSet<>();
 }

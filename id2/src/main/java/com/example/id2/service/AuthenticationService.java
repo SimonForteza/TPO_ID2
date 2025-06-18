@@ -1,13 +1,13 @@
 package com.example.id2.service;
 
-import com.example.id2.dto.AuthenticateRequestDto;
-import com.example.id2.dto.AuthenticateResponseDto;
+import com.example.id2.dto.AuthenticationRequestDto;
+import com.example.id2.dto.AuthenticationResponseDto;
 import com.example.id2.dto.RegisterRequestDto;
 
 public interface AuthenticationService {
 
-    AuthenticateResponseDto authenticate (AuthenticateRequestDto authenticateRequestDto);
+    AuthenticationResponseDto authenticate (AuthenticationRequestDto authenticationRequestDto);
 
-    AuthenticateResponseDto register (RegisterRequestDto registerRequestDto);
+    AuthenticationResponseDto register (RegisterRequestDto registerRequestDto);
 
 }

@@ -2,14 +2,20 @@ package com.example.id2.service.implementation;
 
 import com.example.id2.config.JwtService;
 import com.example.id2.dto.AddMedicalHistoryRequestDto;
+import com.example.id2.dto.AddPatientSensorDataDto;
 import com.example.id2.dto.AddPatientToProfessionalRequestDto;
 import com.example.id2.dto.CreatePatientRequest;
 import com.example.id2.dto.FamiliarPrecedentRequest;
 import com.example.id2.dto.SearchPatientResponse;
 import com.example.id2.mapper.PatientMapper;
-import com.example.id2.model.mongo.PatientModel;
+import com.example.id2.model.cassandra.PatientSensorStatusModel;
+import com.example.id2.model.mongo.PatientMongoModel;
+import com.example.id2.model.neo.PatientNeoModel;
+import com.example.id2.model.neo.ProfessionalNeoModel;
+import com.example.id2.repository.cassandra.PatientSensorStatusRepository;
 import com.example.id2.repository.mongo.PatientMongoRepository;
 import com.example.id2.repository.neo.PatientNeoRepository;
+import com.example.id2.repository.neo.ProfessionalNeoRepository;
 import com.example.id2.service.PatientService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -19,25 +25,47 @@ import java.util.NoSuchElementException;
 @Service
 public class PatientServiceImpl implements PatientService {
 
-    private JwtService jwtService;
+    private final JwtService jwtService;
 
-    private PatientMongoRepository patientMongoRepository;
+    private final ProfessionalNeoRepository professionalNeoRepository;
 
-    private PatientNeoRepository patientNeoRepository;
+    private final PatientMongoRepository patientMongoRepository;
 
-    private PatientMapper patientMapper;
+    private final PatientNeoRepository patientNeoRepository;
+
+    private final PatientSensorStatusRepository patientSensorStatusRepository;
+
+    private final PatientMapper patientMapper;
+
+    public PatientServiceImpl(JwtService jwtService, ProfessionalNeoRepository professionalNeoRepository, PatientMongoRepository patientMongoRepository,
+                              PatientNeoRepository patientNeoRepository, PatientSensorStatusRepository patientSensorStatusRepository, PatientMapper patientMapper) {
+        this.jwtService = jwtService;
+        this.professionalNeoRepository = professionalNeoRepository;
+        this.patientMongoRepository = patientMongoRepository;
+        this.patientNeoRepository = patientNeoRepository;
+        this.patientSensorStatusRepository = patientSensorStatusRepository;
+        this.patientMapper = patientMapper;
+    }
 
     @Override
     public void createPatient(CreatePatientRequest createPatientRequest) {
-
+        PatientMongoModel patientMongoModel = new PatientMongoModel(
+                createPatientRequest.dni(),
+                createPatientRequest.name(),
+                createPatientRequest.address(),
+                createPatientRequest.age(),
+                createPatientRequest.jsonData()
+        );
+        patientMongoRepository.save(patientMongoModel);
     }
 
     @Override
     public SearchPatientResponse searchPatient(String dni) {
+        //TODO nest family relations and professionals related
         checkRoleForPatientOperations(dni);
-        PatientModel patientModel = patientMongoRepository.findByDni(dni)
+        PatientMongoModel patientMongoModel = patientMongoRepository.findByDni(dni)
                 .orElseThrow(() -> new NoSuchElementException("user doesn't exist"));
-        return patientMapper.patientModelToSearchResponse(patientModel);
+        return patientMapper.patientModelToSearchResponse(patientMongoModel);
     }
 
     @Override
@@ -47,12 +75,48 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public void addMedicalHistory(AddMedicalHistoryRequestDto addMedicalHistoryRequestDto) {
-        //TODO
+        checkRoleForPatientOperations(addMedicalHistoryRequestDto.dni());
+
+        PatientMongoModel patientMongo = patientMongoRepository.findByDni(addMedicalHistoryRequestDto.dni())
+                .orElseThrow(() -> new NoSuchElementException("patient doesn't exist"));
+
+        patientMongo.getJsonData().putAll(addMedicalHistoryRequestDto.medicalHistory());
     }
 
     @Override
     public void addPatientToProfessional(AddPatientToProfessionalRequestDto addPatientToProfessionalRequestDto) {
-        //TODO
+        checkRoleForPatientOperations(addPatientToProfessionalRequestDto.patientDni());
+
+        ProfessionalNeoModel professional = professionalNeoRepository.findById(addPatientToProfessionalRequestDto.professionalDni())
+                .orElseThrow(() -> new NoSuchElementException("Professional not found with DNI: " +
+                        addPatientToProfessionalRequestDto.professionalDni()));
+
+        PatientNeoModel patient = patientNeoRepository.findById(addPatientToProfessionalRequestDto.patientDni())
+                .orElseThrow(() -> new NoSuchElementException("Patient not found with DNI: " +
+                        addPatientToProfessionalRequestDto.patientDni()));
+
+        if (professional.getPatients().contains(patient)) {
+            throw new RuntimeException("Patient is already assigned to this professional");
+        }
+
+        professional.getPatients().add(patient);
+        professionalNeoRepository.save(professional);
+    }
+
+    @Override
+    public void addPatientSensorData(AddPatientSensorDataDto addPatientSensorDataDto) {
+        checkRoleForPatientOperations(addPatientSensorDataDto.getDni());
+
+        PatientSensorStatusModel.Key sensorKey = new PatientSensorStatusModel.Key();
+        sensorKey.setDni(addPatientSensorDataDto.getDni());
+        sensorKey.setSensorType(addPatientSensorDataDto.getSensorType());
+        sensorKey.setTimestamp(addPatientSensorDataDto.getTimestamp());
+
+        PatientSensorStatusModel sensor = new PatientSensorStatusModel();
+        sensor.setKey(sensorKey);
+        sensor.setStatusValue(addPatientSensorDataDto.getStatusValue());
+
+        patientSensorStatusRepository.save(sensor);
     }
 
     private void checkRoleForPatientOperations (String patientDni) {

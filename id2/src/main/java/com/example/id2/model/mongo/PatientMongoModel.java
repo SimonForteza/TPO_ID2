@@ -1,17 +1,12 @@
 package com.example.id2.model.mongo;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.neo4j.core.schema.Id;
 
 import java.util.Map;
 
 @Document(collection = "patients")
-public class PatientModel {
+public class PatientMongoModel {
 
     @Id
     private String dni;
@@ -24,7 +19,7 @@ public class PatientModel {
 
     private Map<String, Object> jsonData;
 
-    public PatientModel(String dni, String name, String address, String age, Map<String, Object> jsonData) {
+    public PatientMongoModel(String dni, String name, String address, String age, Map<String, Object> jsonData) {
         this.dni = dni;
         this.name = name;
         this.address = address;
@@ -32,7 +27,7 @@ public class PatientModel {
         this.jsonData = jsonData;
     }
 
-    public PatientModel() {
+    public PatientMongoModel() {
     }
 
     public String getDni() {
