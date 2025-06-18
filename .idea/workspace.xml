@@ -66,6 +66,15 @@
       </method>
     </configuration>
   </component>
+  <component name="RunManager">
+    <configuration name="Id2Application" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="id2" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.id2.Id2Application" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">

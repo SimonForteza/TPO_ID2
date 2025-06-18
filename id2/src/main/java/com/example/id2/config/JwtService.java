@@ -17,9 +17,12 @@ public class JwtService {
     private String secretKey = "WFJ#$%^)!*@#234-7850-231123FERGWEFRFG!";
     private long jwtExpiration = 100000000;
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(UserDetails userDetails, String email, String dni, String role) {
         return Jwts.builder()
                 .subject(userDetails.getUsername())
+                .claim("email", email)
+                .claim("dni", dni)
+                .claim("role", role)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(getSecretKey())
@@ -34,8 +37,16 @@ public class JwtService {
         return extractClaim(token, Claims::getExpiration).before(new Date());
     }
 
-    public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+    public String extractEmail(String token) {
+        return extractClaim(token, claims -> claims.get("email", String.class));
+    }
+
+    public String extractDni(String token) {
+        return extractClaim(token, claims -> claims.get("dni", String.class));
+    }
+
+    public String extractRole(String token) {
+        return extractClaim(token, claims -> claims.get("role", String.class));
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
