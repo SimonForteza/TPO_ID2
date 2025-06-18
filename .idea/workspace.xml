@@ -6,11 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="8479d23f-f914-4bbd-99c8-d81a6b4fdeaf" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/id2/src/main/java/com/example/id2/model/FamilyRelationship.java" beforeDir="false" afterPath="$PROJECT_DIR$/id2/src/main/java/com/example/id2/model/FamilyRelationship.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/id2/src/main/java/com/example/id2/model/Neo4jPatient.java" beforeDir="false" afterPath="$PROJECT_DIR$/id2/src/main/java/com/example/id2/model/Neo4jPatient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/id2/src/main/java/com/example/id2/model/neo/FamiliarModel.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/id2/src/main/java/com/example/id2/repository/mongo/FamiliarPrecedentMongoRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/id2/src/main/java/com/example/id2/repository/mongo/FamiliarPrecedentMongoRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/id2/src/main/java/com/example/id2/service/implementation/RiskScoringServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/id2/src/main/java/com/example/id2/service/implementation/RiskScoringServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
