@@ -13,8 +13,6 @@ public interface PatientService {
 
     SearchPatientResponse searchPatient (String dni);
 
-    void addFamiliarPrecedent (FamiliarPrecedentRequest familiarPrecedentRequest);
-
     void addMedicalHistory (AddMedicalHistoryRequestDto addMedicalHistoryRequestDto);
 
     void addPatientToProfessional (AddPatientToProfessionalRequestDto addPatientToProfessionalRequestDto);
