@@ -29,6 +29,10 @@ public class PatientNeoModel {
     public PatientNeoModel() {
     }
 
+    public PatientNeoModel(String dni) {
+        this.dni = dni;
+    }
+
     public String getDni() {
         return dni;
     }
