@@ -13,16 +13,20 @@ import java.util.List;
 
 @Service
 public class RelationshipServiceImpl implements RelationshipService {
-    @Autowired
-    private Neo4jPatientRepository neo4jPatientRepository;
 
     @Autowired
-    private Neo4jProfessionalRepository neo4jProfessionalRepository;
+    private Neo4jPatientRepository neo4jPatientRepository;
 
     // Establish family relationship between two patients
     public void establishFamilyRelationship(String patient1MongoId,
                                             String patient2MongoId,
                                             RelationshipWeight relationshipWeight) {
+
+        // Validación: no puede relacionarse consigo mismo
+        if (patient1MongoId.equals(patient2MongoId)) {
+            throw new IllegalArgumentException("Un paciente no puede establecer una relación consigo mismo.");
+        }
+
 
         //  verify the existence of Patient and Professional
         Neo4jPatient patient1 = neo4jPatientRepository.findByMongoId(patient1MongoId)

@@ -18,8 +18,7 @@ public interface Neo4jPatientRepository extends Neo4jRepository<Neo4jPatient, St
     List<Neo4jProfessional> findProfessionalsConsultingPatient(String patientId);
 
     @Query("MATCH (p1:Patient {mongoId: $patient1Id}), (p2:Patient {mongoId: $patient2Id}) " +
-            "CREATE (p1)-[r:IS_FAMILY_OF {weight: $weight}]->(p2) " +
-            "RETURN p1, p2")
+            "CREATE (p1)-[r:IS_FAMILY_OF {weight: $weight}]->(p2)")
     void createFamilyRelationship(String patient1Id, String patient2Id, int weight);
 
     @Query("MATCH (p:Patient {mongoId: $patientId})-[r:IS_FAMILY_OF]->(family:Patient) " +

@@ -7,8 +7,6 @@ import com.example.id2.model.RelationshipWeight;
 import java.util.List;
 
 public interface RelationshipService {
-    void establishConsultRelationship(String patientMongoId, String professionalMongoId);
-
     void establishFamilyRelationship(String patient1MongoId, String patient2MongoId, RelationshipWeight relationshipWeight);
 
     List<Neo4jPatient> getFamilyMembers(String patientMongoId);
