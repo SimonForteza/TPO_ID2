@@ -5,11 +5,15 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import java.io.Serializable;
 import java.util.Map;
 
-public record AddMedicalHistoryRequestDto(
+public record CreateProfessionalRequestDto(
 
         String dni,
 
+        String name,
+
+        String specialty,
+
         @JsonAnySetter
-        Map<String, Object> medicalHistory
+        Map<String, Object> jsonData
 
 ) implements Serializable {}
