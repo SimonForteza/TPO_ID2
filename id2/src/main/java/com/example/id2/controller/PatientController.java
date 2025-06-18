@@ -1,8 +1,6 @@
 package com.example.id2.controller;
 
-import com.example.id2.dto.CreateFamilyRelationDto;
-import com.example.id2.dto.CreatePatientRequest;
-import com.example.id2.dto.SearchPatientResponse;
+import com.example.id2.dto.*;
 import com.example.id2.model.neo.RelationshipWeight;
 import com.example.id2.service.PatientService;
 import com.example.id2.service.RelationshipService;
@@ -57,4 +55,24 @@ public class PatientController {
         relationshipService.establishFamilyRelationship(patientDni, familyDni, RelationshipWeight.valueOf(createFamilyRelationDto.relation()));
         return ResponseEntity.ok().build();
     }
+
+
+    @PostMapping(path = "/medical-history", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> addMedicalHistory (@RequestBody AddMedicalHistoryRequestDto addMedicalHistoryRequestDto) {
+        patientService.addMedicalHistory(addMedicalHistoryRequestDto);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(path = "/assign-professional", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> addPatientToProfessional (@RequestBody AddPatientToProfessionalRequestDto addPatientToProfessionalRequestDto) {
+        patientService.addPatientToProfessional(addPatientToProfessionalRequestDto);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(path = "/sensor-data", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> addPatientSensorData (@RequestBody AddPatientSensorDataDto addPatientSensorDataDto) {
+        patientService.addPatientSensorData(addPatientSensorDataDto);
+        return ResponseEntity.ok().build();
+    }
+
 }
