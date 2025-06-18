@@ -2,7 +2,7 @@ package com.example.id2.dto;
 
 import java.io.Serializable;
 
-public record AuthenticateRequestDto (
+public record AuthenticationRequestDto(
 
         String email,
 

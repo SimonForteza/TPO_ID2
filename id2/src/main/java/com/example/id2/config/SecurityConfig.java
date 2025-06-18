@@ -38,7 +38,7 @@ public class SecurityConfig {
                         .csrf(AbstractHttpConfigurer::disable)
                         .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                         .authorizeHttpRequests(req ->
-                                req.requestMatchers("/auth/**").permitAll()
+                                req.requestMatchers("/**").permitAll()
                                 .requestMatchers("/**").authenticated())
                         .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                         .authenticationProvider(authenticationProvider)

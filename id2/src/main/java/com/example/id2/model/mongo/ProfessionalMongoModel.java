@@ -4,7 +4,7 @@ import org.springframework.data.neo4j.core.schema.Id;
 
 import java.util.Map;
 
-public class ProfessionalModel {
+public class ProfessionalMongoModel {
 
     @Id
     private String dni;

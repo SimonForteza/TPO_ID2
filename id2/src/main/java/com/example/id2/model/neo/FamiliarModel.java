@@ -16,5 +16,5 @@ public class FamiliarModel {
     private String id;
 
     @Relationship(type = "RELATED_TO", direction = Relationship.Direction.INCOMING)
-    private Set<ProfessionalModel> professionals = new HashSet<>(); //TODO
+    private Set<ProfessionalNeoModel> professionals = new HashSet<>(); //TODO
 }
