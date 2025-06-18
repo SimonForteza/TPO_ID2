@@ -53,6 +53,7 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public void createPatient(CreatePatientRequest createPatientRequest) {
+        //  create patient in mongoDB
         PatientMongoModel patientMongoModel = new PatientMongoModel(
                 createPatientRequest.dni(),
                 createPatientRequest.name(),
@@ -61,6 +62,10 @@ public class PatientServiceImpl implements PatientService {
                 createPatientRequest.jsonData()
         );
         patientMongoRepository.save(patientMongoModel);
+
+        //  Create patient in Neo4J
+        PatientNeoModel patientNeoModel = new PatientNeoModel(createPatientRequest.dni());
+        patientNeoRepository.save(patientNeoModel);
     }
 
     @Override
