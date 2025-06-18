@@ -6,6 +6,7 @@ import com.example.id2.dto.SearchPatientResponse;
 import com.example.id2.model.neo.RelationshipWeight;
 import com.example.id2.service.PatientService;
 import com.example.id2.service.RelationshipService;
+import com.example.id2.service.RiskScoringService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,12 +27,14 @@ public class PatientController {
 
     private final PatientService patientService;
     private final RelationshipService relationshipService;
+    private final RiskScoringService riskScoringService;
 
     private static final Logger logger = LoggerFactory.getLogger(PatientController.class);
 
-    public PatientController(PatientService patientService, RelationshipService relationshipService) {
+    public PatientController(PatientService patientService, RelationshipService relationshipService, RiskScoringService riskScoringService) {
         this.patientService = patientService;
         this.relationshipService = relationshipService;
+        this.riskScoringService = riskScoringService;
     }
 
     @GetMapping(path = "/{dni}", produces = MediaType.APPLICATION_JSON_VALUE)

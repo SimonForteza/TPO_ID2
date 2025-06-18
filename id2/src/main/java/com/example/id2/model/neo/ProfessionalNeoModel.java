@@ -21,6 +21,11 @@ public class ProfessionalNeoModel {
         this.patients = patients;
     }
 
+    public ProfessionalNeoModel(String dni) {
+        this.dni = dni;
+        this.patients = new HashSet<>();
+    }
+
     public ProfessionalNeoModel() {
     }
 
