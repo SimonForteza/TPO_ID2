@@ -81,11 +81,6 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public void addFamiliarPrecedent(FamiliarPrecedentRequest familiarPrecedentRequest) {
-        //TODO add familiar precedent in Neo4J
-    }
-
-    @Override
     public void addMedicalHistory(AddMedicalHistoryRequestDto addMedicalHistoryRequestDto) {
         checkRoleForPatientOperationsWithProfessional(addMedicalHistoryRequestDto.dni());
 

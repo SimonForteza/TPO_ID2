@@ -26,7 +26,6 @@ public class RelationshipServiceImpl implements RelationshipService {
             throw new IllegalArgumentException("Un paciente no puede establecer una relación consigo mismo.");
         }
 
-
         //  verify the existence of Patient and Professional
         PatientNeoModel patient1 = patientNeoRepository.findByDni(patient1MongoId)
                 .orElseThrow(() -> new RuntimeException("Patient not found with ID: " + patient1MongoId));
