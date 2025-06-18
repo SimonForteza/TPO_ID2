@@ -15,8 +15,6 @@ import java.util.Set;
 public class Neo4jPatient {
     @Id
     private String mongoId;
-    private String firstName;
-    private String lastName;
 
     // Relationship between patient and professional
     @Relationship(type = "CONSULTS", direction = Relationship.Direction.INCOMING)
@@ -27,16 +25,5 @@ public class Neo4jPatient {
     private Set<FamilyRelationship> familyMembers = new HashSet<>();
 }
 
-@RelationshipProperties
-@Data
-class FamilyRelationship {
-    @Id
-    @GeneratedValue
-    private Long id;
 
-    @TargetNode
-    private Neo4jPatient familyMember;
-
-    private RelationshipWeight relationshipWeight;
-}
 

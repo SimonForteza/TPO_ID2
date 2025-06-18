@@ -1,16 +1,16 @@
 package com.example.id2.service.implementation;
 
+import com.example.id2.model.FamilyRelationship;
 import com.example.id2.model.Neo4jPatient;
+import com.example.id2.model.mongo.FamiliarPrecedentModel;
 import com.example.id2.repository.Neo4jPatientRepository;
+import com.example.id2.repository.mongo.FamiliarPrecedentMongoRepository;
 import com.example.id2.service.RelationshipService;
 import com.example.id2.service.RiskScoringService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class RiskScoringServiceImpl implements RiskScoringService {
@@ -21,47 +21,56 @@ public class RiskScoringServiceImpl implements RiskScoringService {
     @Autowired
     private RelationshipService relationshipService;
 
+    @Autowired
+    private FamiliarPrecedentMongoRepository familiarPrecedentMongoRepository;
+
     @Override
     public Map<String, Object> calculateRiskScore(String patientId) {
         Map<String, Object> result = new HashMap<>();
-        //  Obtengo todos los familiares del Paciente
         List<Neo4jPatient> familyMembers = relationshipService.getFamilyMembers(patientId);
 
         double totalRiskScore = 0;
-        int totalWeight = 0;
+        int familyMemberCount = 0; // Renamed for clarity, it represents the count of family members contributing to the score
         List<Map<String, Object>> familyDetails = new ArrayList<>();
 
-        //  Itera cada familiar
         for (Neo4jPatient familyMember : familyMembers) {
-            // Obtener el peso de la relación (1 para padres, 2 para hermanos, etc.)
-            int relationshipWeight = familyMember.getFamilyMembers().stream()
-                    .filter(rel -> rel.getFamilyMember().getMongoId().equals(patientId))
-                    .findFirst()
-                    .map(rel -> rel.getRelationshipWeight().getWeight())
-                    .orElse(5); // Valor por defecto si no se encuentra la relación
+            // Get relationship weight for the current family member
+            int relationshipWeight = 5; // Default value
+            for (FamilyRelationship rel : familyMember.getFamilyMembers()) {
+                if (rel.getFamilyMember().getMongoId().equals(patientId)) {
+                    relationshipWeight = rel.getRelationshipWeight().getWeight();
+                    break;
+                }
+            }
 
-            // Calcular score basado en la cantidad de enfermedades
-            int diseaseCount = familyMember.getHistorialMedico().size();
-            double memberScore = diseaseCount * (1.0 / relationshipWeight);
+            // Get disease count for the family member from MongoDB
+            int diseaseCount = familiarPrecedentMongoRepository.findByPatientDni(familyMember.getMongoId())
+                    .map(FamiliarPrecedentModel::getPrecedents)
+                    .map(Map::size)
+                    .orElse(0);
+
+            // Calculate member score: relationshipWeight * diseaseCount
+            double memberScore = (double) diseaseCount * relationshipWeight; // Changed from division to multiplication
 
             totalRiskScore += memberScore;
-            totalWeight += 1;
+            familyMemberCount += 1;
 
-            //pacienteModel. -> Map<String, String>.
-
-            // Agregar detalles del familiar
+            // Add family member details
             Map<String, Object> familyDetail = new HashMap<>();
-            familyDetail.put("name", familyMember.getFirstName() + " " + familyMember.getLastName());
+            familyDetail.put("patientMongoId", familyMember.getMongoId());
             familyDetail.put("relationshipWeight", relationshipWeight);
-            familyDetail.put("diseaseCount", diseaseCount);
+            familyDetail.put("precedentCount", diseaseCount);
             familyDetail.put("score", memberScore);
             familyDetails.add(familyDetail);
         }
 
-        // Calcular score final
-        double finalScore = totalWeight > 0 ? (totalRiskScore / totalWeight) * 20 : 0; // Multiplicamos por 20 para tener un rango más amplio
+        // Calculate final score
+        // Adjusted the final score calculation: (totalRiskScore / familyMemberCount) is the average score per family member.
+        // Multiplying by 5 gives a range similar to what you might expect if weights are 1-5 and diseases are few.
+        // You might need to adjust the multiplier (5) based on your desired final score range.
+        double finalScore = familyMemberCount > 0 ? (totalRiskScore / familyMemberCount) * 5 : 0;
 
-        // Determinar nivel de riesgo
+        // Determine risk level
         String riskLevel;
         if (finalScore < 5) {
             riskLevel = "BAJO";
