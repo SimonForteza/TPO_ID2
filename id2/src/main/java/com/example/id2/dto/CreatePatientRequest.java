@@ -5,6 +5,8 @@ import java.util.Map;
 
 public record CreatePatientRequest (
 
+        //ya deberia existir con sus credenciales, pero excede el scope
+
         String name,
 
         String address,

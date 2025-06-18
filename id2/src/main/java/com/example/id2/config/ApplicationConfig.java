@@ -1,7 +1,8 @@
 package com.example.id2.config;
 
-import com.example.id2.repository.AuthenticationRepository;
+import com.example.id2.repository.mongo.AuthenticationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,10 +17,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.NoSuchElementException;
 
 @Configuration
-@RequiredArgsConstructor
 public class ApplicationConfig {
 
     private final AuthenticationRepository authenticationRepository;
+
+    public ApplicationConfig(AuthenticationRepository authenticationRepository) {
+        this.authenticationRepository = authenticationRepository;
+    }
 
     @Bean
     public UserDetailsService userDetailsService() {
