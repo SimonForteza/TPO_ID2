@@ -20,6 +20,10 @@ import com.example.id2.service.PatientService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 @Service
@@ -61,10 +65,18 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public SearchPatientResponse searchPatient(String dni) {
-        //TODO nest family relations and professionals related
-        checkRoleForPatientOperations(dni);
+        checkRoleForPatientOperationsWithProfessional(dni);
         PatientMongoModel patientMongoModel = patientMongoRepository.findByDni(dni)
                 .orElseThrow(() -> new NoSuchElementException("user doesn't exist"));
+        List<PatientNeoModel> family = patientNeoRepository.findFamilyMembers(dni).orElse(new ArrayList<>());
+        List<ProfessionalNeoModel> professionals = patientNeoRepository.findProfessionalsConsultingPatient(dni).orElse(new ArrayList<>());
+        Map<String, Object> jsonData = patientMongoModel.getJsonData();
+        if (jsonData == null) {
+            jsonData = new HashMap<>();
+        }
+        jsonData.put("family", family);
+        jsonData.put("professionals", professionals);
+        patientMongoModel.setJsonData(jsonData);
         return patientMapper.patientModelToSearchResponse(patientMongoModel);
     }
 
@@ -75,7 +87,7 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public void addMedicalHistory(AddMedicalHistoryRequestDto addMedicalHistoryRequestDto) {
-        checkRoleForPatientOperations(addMedicalHistoryRequestDto.dni());
+        checkRoleForPatientOperationsWithProfessional(addMedicalHistoryRequestDto.dni());
 
         PatientMongoModel patientMongo = patientMongoRepository.findByDni(addMedicalHistoryRequestDto.dni())
                 .orElseThrow(() -> new NoSuchElementException("patient doesn't exist"));
@@ -85,7 +97,7 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public void addPatientToProfessional(AddPatientToProfessionalRequestDto addPatientToProfessionalRequestDto) {
-        checkRoleForPatientOperations(addPatientToProfessionalRequestDto.patientDni());
+        checkRoleForPatientOperationsWithoutProfessional(addPatientToProfessionalRequestDto.patientDni());
 
         ProfessionalNeoModel professional = professionalNeoRepository.findById(addPatientToProfessionalRequestDto.professionalDni())
                 .orElseThrow(() -> new NoSuchElementException("Professional not found with DNI: " +
@@ -105,7 +117,7 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public void addPatientSensorData(AddPatientSensorDataDto addPatientSensorDataDto) {
-        checkRoleForPatientOperations(addPatientSensorDataDto.getDni());
+        checkRoleForPatientOperationsWithoutProfessional(addPatientSensorDataDto.getDni());
 
         PatientSensorStatusModel.Key sensorKey = new PatientSensorStatusModel.Key();
         sensorKey.setDni(addPatientSensorDataDto.getDni());
@@ -119,7 +131,7 @@ public class PatientServiceImpl implements PatientService {
         patientSensorStatusRepository.save(sensor);
     }
 
-    private void checkRoleForPatientOperations (String patientDni) {
+    private void checkRoleForPatientOperationsWithProfessional (String patientDni) {
         String requesterDni = jwtService.extractDni(SecurityContextHolder.getContext().getAuthentication().getCredentials().toString());
         String role = jwtService.extractRole(SecurityContextHolder.getContext().getAuthentication().getCredentials().toString());
 
@@ -133,7 +145,28 @@ public class PatientServiceImpl implements PatientService {
                 && professionalNeoRepository.findPatientsConsultedByProfessional(requesterDni)
                 .get()
                 .stream()
-                .noneMatch(patient -> patient.getDni().equals(patientDni))) {
+                .anyMatch(patient -> patient.getDni().equals(patientDni))) {
+            return;
+        }
+
+        throw new NoSuchElementException();
+    }
+
+    private void checkRoleForPatientOperationsWithoutProfessional (String patientDni) {
+        String requesterDni = jwtService.extractDni(SecurityContextHolder.getContext().getAuthentication().getCredentials().toString());
+        String role = jwtService.extractRole(SecurityContextHolder.getContext().getAuthentication().getCredentials().toString());
+
+        if (role.equals("ADMIN"))
+            return;
+
+        if (requesterDni.equals(patientDni))
+            return;
+
+        if (role.equals("PROFESSIONAL")
+                && professionalNeoRepository.findPatientsConsultedByProfessional(requesterDni)
+                .get()
+                .stream()
+                .anyMatch(patient -> patient.getDni().equals(patientDni))) {
             return;
         }
 

@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface ProfessionalNeoRepository extends Neo4jRepository<ProfessionalNeoModel, String> {
     Optional<ProfessionalNeoModel> findByDni(String dni);
 
-    @Query("MATCH (prof:Professional {mongoId: $professionalId})-[:CONSULTS]->(p:Patient) RETURN p")
+    @Query("MATCH (prof:Professional {dni: $professionalId})-[:CONSULTS]->(p:Patient) RETURN p")
     Optional<List<PatientNeoModel>> findPatientsConsultedByProfessional(String professionalId);
 
     @Query("MATCH (p:Patient {mongoId: $patientId}) " +

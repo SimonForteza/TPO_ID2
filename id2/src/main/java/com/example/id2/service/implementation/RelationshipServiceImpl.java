@@ -7,6 +7,7 @@ import com.example.id2.service.RelationshipService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -40,7 +41,7 @@ public class RelationshipServiceImpl implements RelationshipService {
 
     // Get all family members of a patient
     public List<PatientNeoModel> getFamilyMembers(String patientMongoId) {
-        return patientNeoRepository.findFamilyMembers(patientMongoId);
+        return patientNeoRepository.findFamilyMembers(patientMongoId).orElse(new ArrayList<>());
     }
 
     // Get family members with weight less than or equal to maxWeight

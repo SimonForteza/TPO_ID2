@@ -24,7 +24,7 @@ public interface PatientNeoRepository extends Neo4jRepository<PatientNeoModel, S
     @Query("MATCH (p:Patient {dni: $dni})-[r:IS_FAMILY_OF]->(family:Patient) " +
             "RETURN family, r.weight as weight " +
             "ORDER BY r.weight")
-    List<PatientNeoModel> findFamilyMembers(String dni);
+    Optional<List<PatientNeoModel>> findFamilyMembers(String dni);
 
     @Query("MATCH (p:Patient {dni: $dni})-[r:IS_FAMILY_OF]->(family:Patient) " +
             "WHERE r.weight <= $maxWeight " +
