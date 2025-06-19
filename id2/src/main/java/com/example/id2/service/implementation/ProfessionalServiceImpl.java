@@ -8,9 +8,11 @@ import com.example.id2.model.neo.ProfessionalNeoModel;
 import com.example.id2.repository.mongo.ProfessionalMongoRepository;
 import com.example.id2.repository.neo.ProfessionalNeoRepository;
 import com.example.id2.service.ProfessionalService;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 
+@Service
 public class ProfessionalServiceImpl implements ProfessionalService {
 
     ProfessionalNeoRepository professionalNeoRepository;

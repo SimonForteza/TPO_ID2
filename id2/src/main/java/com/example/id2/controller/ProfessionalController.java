@@ -29,7 +29,7 @@ public class ProfessionalController {
         this.professionalService = professionalService;
     }
 
-    @GetMapping(path = "/{dni}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<FilterProfessionalBySpecialtyResponseDto> getProfessionalBySpecialty (@RequestBody FilterProfessionalBySpecialtyRequestDto request) {
         logger.info(request.toString());
         return ResponseEntity.ok(professionalService.filterProfessionalBySpecialty(request));

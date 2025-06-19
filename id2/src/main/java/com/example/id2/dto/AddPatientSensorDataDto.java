@@ -1,20 +1,31 @@
 package com.example.id2.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.Serializable;
 import java.time.Instant;
 
 public class AddPatientSensorDataDto implements Serializable {
 
+    @JsonProperty("dni")
     private String dni;
+
+    @JsonProperty("sensorType")
     private String sensorType;
+
+    @JsonProperty("statusValue")
     private String statusValue;
+
     private Instant timestamp;
 
-    public AddPatientSensorDataDto(String dni, String sensorType, String statusValue, Instant timestamp) {
+    public AddPatientSensorDataDto(String dni, String sensorType, String statusValue) {
         this.dni = dni;
         this.sensorType = sensorType;
         this.statusValue = statusValue;
         this.timestamp = Instant.now();
+    }
+
+    public AddPatientSensorDataDto() {
     }
 
     public String getDni() {

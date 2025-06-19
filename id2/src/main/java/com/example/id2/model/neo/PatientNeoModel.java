@@ -12,11 +12,9 @@ public class PatientNeoModel {
     @Id
     private String dni;
 
-    // Relationship between patient and professional
     @Relationship(type = "CONSULTS", direction = Relationship.Direction.INCOMING)
     private Set<ProfessionalNeoModel> professionals = new HashSet<>();
 
-    // Relationship between family members
     @Relationship(type = "IS_FAMILY_OF", direction = Relationship.Direction.OUTGOING)
     private Set<FamilyRelationship> familyMembers = new HashSet<>();
 

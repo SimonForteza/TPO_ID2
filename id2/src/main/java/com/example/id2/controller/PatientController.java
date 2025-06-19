@@ -56,7 +56,6 @@ public class PatientController {
         return ResponseEntity.ok().build();
     }
 
-
     @PostMapping(path = "/medical-history", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> addMedicalHistory (@RequestBody AddMedicalHistoryRequestDto addMedicalHistoryRequestDto) {
         patientService.addMedicalHistory(addMedicalHistoryRequestDto);
@@ -74,5 +73,4 @@ public class PatientController {
         patientService.addPatientSensorData(addPatientSensorDataDto);
         return ResponseEntity.ok().build();
     }
-
 }
